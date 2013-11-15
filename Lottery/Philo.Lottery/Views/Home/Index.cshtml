@@ -80,17 +80,21 @@
 
 
                 });
-            }, 100);
+            }, 1);
 
             $("#btnStop").click(function () {
-                $('.content dl').hide();
-                clearInterval(timer);               
-                $('.content dl:gt(' + 100 + ')').show();
-                
+                clearInterval(timer);
+                setTimeout(SetLotteryResult, 100);       
             });
+
 
            
         });
+
+        function SetLotteryResult() {
+            $('.content dl').hide();
+            $('.content dl:gt(' + 100 + ')').show();
+        }
     </script>
 </body>
 </html>
