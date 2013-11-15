@@ -1,0 +1,96 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>随机抽奖 - 账号抽奖</title>
+    <style type="text/css">
+        .content {
+            width: 300px;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        dl {
+            width: 200px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            账号抽奖
+        </div>
+        <div class="content">
+
+        </div>
+        <div>
+            <input type="button" id="btnStop" title=" 停 止 " value=" 停 止 " />
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            //获取抽奖名单
+            var n = 0;
+            var c = 0;
+
+            
+
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "Home/GetPhoneList",
+                data: "{'type':'suoyou'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                cache: false,
+                success: function (data) {
+                    var str = "";
+                    $.each(data, function (i, item) {
+                        str += "<dl><dt>" + item.Mobile + "(" + item.UserName + ")" + "</dt></dl>";
+                        n++;
+                    });
+
+                    $('.content ').html(str);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+
+            alert("开始！" + "参与用户数为" + n);
+            ////执行不断刷新的方法
+            $('.content dl').hide();
+            $('.content dl:gt(0)').show();
+
+            var timer = window.setInterval(function () {
+                $('.content dl:visible:first').prev().slideDown("fast", function () {
+                    if (c++ > n) c = 0; //不点击停止就反复循环
+
+                    $('.content dl').hide();
+                    $('.content dl:gt(' + c + ')').show();
+
+
+                });
+            }, 100);
+
+            $("#btnStop").click(function () {
+                $('.content dl').hide();
+                clearInterval(timer);               
+                $('.content dl:gt(' + 100 + ')').show();
+                
+            });
+
+           
+        });
+    </script>
+</body>
+</html>
