@@ -10,9 +10,12 @@
     <title>随机抽奖 - 账号抽奖</title>
     <style type="text/css">
         .content {
-            width: 300px;
+            width: 200px;
             height: 60px;
             overflow: hidden;
+            border:dotted 1px;
+            text-align:center;
+            align-content:center;
         }
 
         dl {
@@ -22,7 +25,7 @@
     </style>
 </head>
 <body>
-    <div>
+    <center>
         <div>
             账号抽奖
         </div>
@@ -30,9 +33,9 @@
 
         </div>
         <div>
-            <input type="button" id="btnStop" title=" 停 止 " value=" 停 止 " />
+            <input type="button" id="btnStop" title="点此停止滚动" value=" 停 止 " />
         </div>
-    </div>
+    </center>
 
     <script src="~/Scripts/jquery-1.8.2.min.js"></script>
     <script type="text/javascript">
@@ -40,15 +43,13 @@
 
             //获取抽奖名单
             var n = 0;
-            var c = 0;
-
-            
+            var c = 0;            
 
             $.ajax({
                 type: "get",
                 async: false,
                 url: "Home/GetPhoneList",
-                data: "{'type':'suoyou'}",
+                data: "",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 cache: false,
@@ -72,19 +73,19 @@
             $('.content dl:gt(0)').show();
 
             var timer = window.setInterval(function () {
-                $('.content dl:visible:first').prev().slideDown("fast", function () {
-                    if (c++ > n) c = 0; //不点击停止就反复循环
+                if (c++ > n) c = 0; //不点击停止就反复循环
 
+                $('.content dl:visible:first').prev().slideDown("middle", function () {
                     $('.content dl').hide();
                     $('.content dl:gt(' + c + ')').show();
-
-
                 });
-            }, 1);
 
-            $("#btnStop").click(function () {
+            }, 200);//时间设定不对有可能出现空白 不会循环
+
+            $("#btnStop").click(function () {                
+               
                 clearInterval(timer);
-                setTimeout(SetLotteryResult, 100);       
+                setTimeout(SetLotteryResult, 10);
             });
 
 
@@ -92,8 +93,24 @@
         });
 
         function SetLotteryResult() {
-            $('.content dl').hide();
-            $('.content dl:gt(' + 100 + ')').show();
+
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "Home/GetLotteryResult",
+                data: "",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                cache: false,
+                success: function (data) {
+                    $('.content dl').hide();
+                    $('.content dl:gt(' + data + ')').show();
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+           
         }
     </script>
 </body>

@@ -21,21 +21,38 @@ namespace Philo.Lottery.Controllers
 
         public JsonResult GetPhoneList()
         {
-            List<Lottery.Models.LotteryUser> lotteryUserList = new List<Models.LotteryUser>();
-            for (int index = 0; index < 2000; index++)
+            List<Lottery.Models.LotteryUser> userlist = new List<Models.LotteryUser>();
+
+            DataTable dt = new DataTable();
+            string message = "";
+            bool bo = false;
+            string excelpath = Server.MapPath("/Resource/ExcelData/LotteryList.xlsx");
+            dt = Common.PNpoi.ExcelHelper.ReadExcel(excelpath, ref bo, ref message);
+            for (int i = 0; i < dt.Rows.Count; i++)
             {
-                Lottery.Models.LotteryUser lotteryUser = new Models.LotteryUser();
-                lotteryUser.Address = "地区_" + index%5 + "_首";
-
-                lotteryUser.LotteryId = index + 1;
-                lotteryUser.Mobile = "15" + index % 9 + RandomBasic.GetRandomInArea(RandomBasic.GetRandomSeed(), 1000, 9999) + RandomBasic.GetRandomInArea(RandomBasic.GetRandomSeed(), 1000, 9999);
-                lotteryUser.UserName = "用户" + index;
-
-                lotteryUserList.Add(lotteryUser);
+                userlist.Add(new Lottery.Models.LotteryUser
+                {
+                    LotteryId = Convert.ToInt32(dt.Rows[i]["LotteryId"].ToString()),
+                    UserName = dt.Rows[i]["UserName"].ToString(),
+                    Mobile = dt.Rows[i]["Mobile"].ToString(),
+                    Address = dt.Rows[i]["Address"].ToString()
+                });
             }
-            return Json(lotteryUserList,JsonRequestBehavior.AllowGet);
+            return Json(userlist, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetLotteryResult()
+        {
+            int i = 0;
+            DataTable dt = new DataTable();
+            string message = "";
+            bool bo = false;
+            string excelpath = Server.MapPath("/Resource/ExcelData/LotteryList.xlsx");
+            dt = Common.PNpoi.ExcelHelper.ReadExcel(excelpath, ref bo, ref message);
+
+            i = Common.PRandom.RandomBasic.GetRandomInArea(Common.PRandom.RandomBasic.GetRandomSeed(), 1, dt.Rows.Count);
+            return Json(i, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult GetExcel()
         {
@@ -43,11 +60,13 @@ namespace Philo.Lottery.Controllers
 
             DataTable dt = new DataTable();
             string message = "";
+            bool bo = false;
             string excelpath = Server.MapPath("/Resource/ExcelData/LotteryList.xlsx");
-            dt = Common.PNpoi.ExcelHelper.ReadExcel(excelpath, ref message);
+            dt = Common.PNpoi.ExcelHelper.ReadExcel(excelpath, ref bo, ref message);
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                userlist.Add(new Lottery.Models.LotteryUser {
+                userlist.Add(new Lottery.Models.LotteryUser
+                {
                     LotteryId = Convert.ToInt32(dt.Rows[i]["LotteryId"].ToString()),
                     UserName = dt.Rows[i]["UserName"].ToString(),
                     Mobile = dt.Rows[i]["Mobile"].ToString(),

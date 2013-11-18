@@ -17,7 +17,7 @@ namespace Philo.Common.PNpoi
         /// <param name="message">返回的消息</param>
         /// <param name="error">是否成功</param>
         /// <returns></returns>
-        public static DataTable ReadExcel(string filePath, ref string message, ref bool error)
+        public static DataTable ReadExcel(string filePath, ref bool error, ref string message)
         {
             error = false;
             DataTable table = new DataTable();
@@ -45,7 +45,7 @@ namespace Philo.Common.PNpoi
                 //最后一列的标号  即总的行数
                 int rowCount = sheet.LastRowNum;
 
-                for (int i = (sheet.FirstRowNum + 1); i < sheet.LastRowNum; i++)
+                for (int i = (sheet.FirstRowNum + 1); i <= sheet.LastRowNum; i++)
                 {
                     IRow row = sheet.GetRow(i);
                     DataRow dataRow = table.NewRow();
